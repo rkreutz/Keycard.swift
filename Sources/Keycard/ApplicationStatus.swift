@@ -3,9 +3,9 @@ enum AppStatusTag: UInt8 {
 }
 
 public struct ApplicationStatus {
-    public let pinRetryCount: Int
-    public let pukRetryCount: Int
-    public let hasMasterKey: Bool
+    public var pinRetryCount: Int
+    public var pukRetryCount: Int
+    public var hasMasterKey: Bool
     
     public init(_ data: [UInt8]) throws {
         let tlv = TinyBERTLV(data)

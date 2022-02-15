@@ -8,6 +8,8 @@ public struct RecoverableSignature {
     public let recId: UInt8
     public let r: [UInt8]
     public let s: [UInt8]
+    public var v: UInt8 { 27 + recId }
+    public var ethereumSignature: String { "0x\((r + s + [v]).toHexString())" }
     
     public init(hash: [UInt8], data: [UInt8]) throws {
         let tlv = TinyBERTLV(data)

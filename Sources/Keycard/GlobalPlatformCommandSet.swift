@@ -10,10 +10,68 @@ public class GlobalPlatformCommandSet {
         self.cardChannel = cardChannel
         self.secureChannel = SCP02(channel: cardChannel)
     }
+
+    public func autoSelect() throws {
+        do {
+            try select().checkOK()
+        } catch let error as StatusWord {
+            throw CardError.unexpectedSW(error)
+        } catch {
+            if #available(iOS 13.0, *), case CoreNFCCardChannel.Error.invalidAPDU = error {
+                throw CardError.invalidRequestData
+            } else {
+                throw error
+            }
+        }
+    }
     
     public func select() throws -> APDUResponse {
         let selectApplet: APDUCommand = APDUCommand(cla: CLA.iso7816.rawValue, ins: ISO7816INS.select.rawValue, p1: 0x04, p2: 0x00, data: Identifier.isdInstanceAID.val)
         return try cardChannel.send(selectApplet)
+    }
+
+    public func getStatus() throws -> GlobalPlatformStatus {
+        var status = GlobalPlatformStatus()
+        do {
+            do {
+                let selectPackage: APDUCommand = APDUCommand(cla: CLA.iso7816.rawValue, ins: ISO7816INS.select.rawValue, p1: 0x04, p2: 0x00, data: Identifier.packageAID.val)
+                try cardChannel.send(selectPackage).checkOK()
+                status.isKeycardPackageInstalled = true
+            } catch {
+                status.isKeycardPackageInstalled = false
+            }
+            do {
+                let selectApplet: APDUCommand = APDUCommand(cla: CLA.iso7816.rawValue, ins: ISO7816INS.select.rawValue, p1: 0x04, p2: 0x00, data: Identifier.getKeycardInstanceAID())
+                try cardChannel.send(selectApplet).checkOK()
+                status.isKeycardInstanceInstalled = true
+            } catch StatusWord.noInstanceInstalled, StatusWord.pairingIndexInvalid, StatusWord.unknownError {
+                status.isKeycardInstanceInstalled = false
+            }
+            do {
+                let selectApplet: APDUCommand = APDUCommand(cla: CLA.iso7816.rawValue, ins: ISO7816INS.select.rawValue, p1: 0x04, p2: 0x00, data: Identifier.keycardCashInstanceAID.val)
+                try cardChannel.send(selectApplet).checkOK()
+                status.isCashInstanceInstalled = true
+            } catch StatusWord.noInstanceInstalled, StatusWord.alreadyInitialized, StatusWord.pairingIndexInvalid {
+                status.isCashInstanceInstalled = false
+            }
+            do {
+                let selectApplet: APDUCommand = APDUCommand(cla: CLA.iso7816.rawValue, ins: ISO7816INS.select.rawValue, p1: 0x04, p2: 0x00, data: Identifier.ndefInstanceAID.val)
+                try cardChannel.send(selectApplet).checkOK()
+                status.isNDEFInstanceInstalled = true
+            } catch StatusWord.noInstanceInstalled, StatusWord.alreadyInitialized, StatusWord.unknownError {
+                status.isNDEFInstanceInstalled = false
+            }
+        } catch let error as StatusWord {
+            throw CardError.unexpectedSW(error)
+        } catch {
+            if #available(iOS 13.0, *), case CoreNFCCardChannel.Error.invalidAPDU = error {
+                throw CardError.invalidRequestData
+            } else {
+                throw error
+            }
+        }
+        try autoSelect()
+        return status
     }
     
     public func initializeUpdate(hostChallenge: [UInt8]) throws -> APDUResponse {
@@ -38,17 +96,69 @@ public class GlobalPlatformCommandSet {
     }
     
     public func openSecureChannel() throws {
-        let hostChallenge: [UInt8] = Crypto.shared.random(count: 8)
-        try initializeUpdate(hostChallenge: hostChallenge).checkOK()
-        try externalAuthenticate(hostChallenge: hostChallenge).checkOK()
+        do {
+            let hostChallenge: [UInt8] = Crypto.shared.random(count: 8)
+            try initializeUpdate(hostChallenge: hostChallenge).checkOK()
+            try externalAuthenticate(hostChallenge: hostChallenge).checkOK()
+        } catch let error as StatusWord {
+            throw CardError.unexpectedSW(error)
+        } catch {
+            if #available(iOS 13.0, *), case CoreNFCCardChannel.Error.invalidAPDU = error {
+                throw CardError.invalidRequestData
+            } else {
+                throw error
+            }
+        }
+    }
+
+    public func autoDeleteKeycardInstance() throws {
+        do {
+            try deleteKeycardInstance().checkOK()
+        } catch let error as StatusWord {
+            throw CardError.unexpectedSW(error)
+        } catch {
+            if #available(iOS 13.0, *), case CoreNFCCardChannel.Error.invalidAPDU = error {
+                throw CardError.invalidRequestData
+            } else {
+                throw error
+            }
+        }
     }
 
     public func deleteKeycardInstance() throws -> APDUResponse {
         return try delete(aid: Identifier.getKeycardInstanceAID())
     }
+
+    public func autoDeleteCashInstance() throws {
+        do {
+            try deleteCashInstance().checkOK()
+        } catch let error as StatusWord {
+            throw CardError.unexpectedSW(error)
+        } catch {
+            if #available(iOS 13.0, *), case CoreNFCCardChannel.Error.invalidAPDU = error {
+                throw CardError.invalidRequestData
+            } else {
+                throw error
+            }
+        }
+    }
     
     public func deleteCashInstance() throws -> APDUResponse {
         return try delete(aid: Identifier.keycardCashInstanceAID.val)
+    }
+
+    public func autoDeleteNDEFInstance() throws {
+        do {
+            try deleteNDEFInstance().checkOK()
+        } catch let error as StatusWord {
+            throw CardError.unexpectedSW(error)
+        } catch {
+            if #available(iOS 13.0, *), case CoreNFCCardChannel.Error.invalidAPDU = error {
+                throw CardError.invalidRequestData
+            } else {
+                throw error
+            }
+        }
     }
     
     public func deleteNDEFInstance() throws -> APDUResponse {
@@ -73,13 +183,55 @@ public class GlobalPlatformCommandSet {
         let delete: APDUCommand = APDUCommand(cla: CLA.proprietary.rawValue, ins: GlobalPlatformINS.delete.rawValue, p1: 0, p2: 0, data: data)
         return try secureChannel.send(delete)
     }
+
+    public func autoInstallKeycardInstance() throws {
+        do {
+            try installKeycardInstance().checkOK()
+        } catch let error as StatusWord {
+            throw CardError.unexpectedSW(error)
+        } catch {
+            if #available(iOS 13.0, *), case CoreNFCCardChannel.Error.invalidAPDU = error {
+                throw CardError.invalidRequestData
+            } else {
+                throw error
+            }
+        }
+    }
     
     public func installKeycardInstance() throws -> APDUResponse {
         return try installForInstall(packageAID: Identifier.packageAID.val, appletAID: Identifier.keycardAID.val, instanceAID: Identifier.getKeycardInstanceAID(), params: [])
     }
+
+    public func autoInstallCashInstance() throws {
+        do {
+            try installCashInstance(cashData: []).checkOK()
+        } catch let error as StatusWord {
+            throw CardError.unexpectedSW(error)
+        } catch {
+            if #available(iOS 13.0, *), case CoreNFCCardChannel.Error.invalidAPDU = error {
+                throw CardError.invalidRequestData
+            } else {
+                throw error
+            }
+        }
+    }
     
     public func installCashInstance(cashData: [UInt8]) throws -> APDUResponse {
         return try installForInstall(packageAID: Identifier.packageAID.val, appletAID: Identifier.keycardCashAID.val, instanceAID: Identifier.keycardCashInstanceAID.val, params: cashData)
+    }
+
+    public func autoInstallNDEFInstance() throws {
+        do {
+            try installNDEFInstance(ndefRecord: []).checkOK()
+        } catch let error as StatusWord {
+            throw CardError.unexpectedSW(error)
+        } catch {
+            if #available(iOS 13.0, *), case CoreNFCCardChannel.Error.invalidAPDU = error {
+                throw CardError.invalidRequestData
+            } else {
+                throw error
+            }
+        }
     }
     
     public func installNDEFInstance(ndefRecord: [UInt8]) throws -> APDUResponse {

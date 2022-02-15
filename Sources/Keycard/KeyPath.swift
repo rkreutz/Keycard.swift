@@ -6,6 +6,7 @@
   public struct KeyPath: CustomStringConvertible {
     public let source: DeriveKeyP1
     public var data: [UInt8]
+    public var isEip1581Compliant: Bool { description.hasPrefix("m/43'/60'/1581'") }
     
     public var description: String {
         get {

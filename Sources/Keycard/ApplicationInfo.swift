@@ -16,13 +16,13 @@ enum AppCapability: UInt8 {
 
 public struct ApplicationInfo {
 
-    public let instanceUID: [UInt8]
-    public let freePairingSlots: Int
-    public let appVersion: UInt16
-    public let keyUID: [UInt8]
-    public let secureChannelPubKey: [UInt8]
-    public let initializedCard: Bool
-    public let capabilities: UInt8
+    public var instanceUID: [UInt8]
+    public var freePairingSlots: Int
+    public var appVersion: UInt16
+    public var keyUID: [UInt8]
+    public var secureChannelPubKey: [UInt8]
+    public var initializedCard: Bool
+    public var capabilities: UInt8
 
     public var appVersionString: String {
         return "\(appVersion >> 8).\(appVersion & 0xff)"

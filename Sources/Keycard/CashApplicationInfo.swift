@@ -8,6 +8,7 @@ public struct CashApplicationInfo {
     public let pubKey: [UInt8]
     public let appVersion: UInt16
     public let pubData: [UInt8]
+    public var ethereumAddress: String { "0x\(Crypto.shared.secp256k1PublicToEthereumAddress(pubKey).toHexString())" }
     
     public var appVersionString: String {
         return "\(appVersion >> 8).\(appVersion & 0xff)"
