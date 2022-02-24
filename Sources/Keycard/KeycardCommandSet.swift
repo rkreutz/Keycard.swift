@@ -156,6 +156,8 @@ public class KeycardCommandSet {
     public func getCurrentKeyPath() throws -> KeyPath {
         do {
             return try KeyPath(data: getStatus(info: 1).checkOK().data)
+        } catch let error as KeyPathError {
+            throw CardError.invalidKeyPath(error)
         } catch let error as TLVError {
             throw CardError.invalidResponseData(error)
         } catch let error as StatusWord {
@@ -592,6 +594,8 @@ public class KeycardCommandSet {
         do {
             let resp: APDUResponse = try exportCurrentKey(publicOnly: publicOnly).checkOK()
             return try BIP32KeyPair(fromTLV: resp.data)
+        } catch let error as KeyPathError {
+            throw CardError.invalidKeyPath(error)
         } catch let error as TLVError {
             throw CardError.invalidResponseData(error)
         } catch StatusWord.conditionsOfUseNotSatisfied {
