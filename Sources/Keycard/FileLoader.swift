@@ -1,7 +1,7 @@
 import Foundation
 import Zip
 
-struct FileLoader {
+public struct FileLoader {
     private static let blockSize = 247 // 255 - 8 bytes for MAC
     private static let fileNames = ["Header.cap", "Directory.cap", "Import.cap", "Applet.cap", "Class.cap", "Method.cap", "StaticField.cap", "Export.cap", "ConstantPool.cap", "RefLocation.cap"]
     private static let fileTag: UInt8 = 0xc4
@@ -59,15 +59,15 @@ struct FileLoader {
 
 extension FileLoader: Sequence, IteratorProtocol {
 
-    struct Element {
-        var data: [UInt8]
-        var blockCount: UInt8
-        var hasMoreBlocks: Bool
+    public struct Element {
+        public var data: [UInt8]
+        public var blockCount: UInt8
+        public var hasMoreBlocks: Bool
     }
 
-    var underestimatedCount: Int { (data.count / Self.blockSize) + ((data.count % Self.blockSize) > 0 ? 1 : 0) }
+    public var underestimatedCount: Int { (data.count / Self.blockSize) + ((data.count % Self.blockSize) > 0 ? 1 : 0) }
 
-    mutating func next() -> Element? {
+    public mutating func next() -> Element? {
         guard currentBlock < underestimatedCount else { return nil }
         defer {
             currentBlock += 1

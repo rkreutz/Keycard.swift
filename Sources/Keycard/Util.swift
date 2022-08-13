@@ -1,4 +1,4 @@
-extension Collection where Element == Character {
+public extension Collection where Element == Character {
     var hexToBytes: [UInt8] {
         var last = first
         return dropFirst().compactMap {
