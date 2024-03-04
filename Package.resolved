@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "BigInt",
+        "repositoryURL": "https://github.com/attaswift/BigInt.git",
+        "state": {
+          "branch": null,
+          "revision": "0ed110f7555c34ff468e72e1686e59721f2b0da6",
+          "version": "5.3.0"
+        }
+      },
+      {
         "package": "CryptoSwift",
         "repositoryURL": "https://github.com/krzyzanowskim/CryptoSwift.git",
         "state": {
@@ -17,6 +26,15 @@
           "branch": "master",
           "revision": "d2c49786e9245d77f4eba6ce78a87f87506623c5",
           "version": null
+        }
+      },
+      {
+        "package": "ZipArchive",
+        "repositoryURL": "https://github.com/ZipArchive/ZipArchive.git",
+        "state": {
+          "branch": null,
+          "revision": "38e0ce0598e06b034271f296a8e15b149c91aa19",
+          "version": "2.4.3"
         }
       }
     ]

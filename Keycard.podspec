@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
 	spec.name = 'Keycard'
-	spec.version = '3.0.4'
+	spec.version = '3.0.7'
 	spec.authors = {'Bitgamma' => 'opensource@bitgamma.com'}
 	spec.homepage = 'https://github.com/status-im/Keycard.swift'
 	spec.license = { :type => 'Apache' }
@@ -12,5 +12,6 @@ Pod::Spec.new do |spec|
 	spec.frameworks = 'CoreNFC'
 	spec.dependency 'CryptoSwift'
 	spec.dependency 'secp256k1'
-  spec.dependency 'Zip'
+	spec.dependency 'SSZipArchive'
+	spec.dependency 'BigInt'
 end
