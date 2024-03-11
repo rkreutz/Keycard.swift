@@ -679,6 +679,22 @@ public class KeycardCommandSet {
             }
         }
     }
+    
+    public func autoInitialize(pin: String, pinAttempts: UInt8?, duressPin: String?, puk: String, pukAttempts: UInt8?, pairingPassword: String) throws {
+        do {
+            try initialize(pin: pin, pinAttempts: pinAttempts, duressPin: duressPin, puk: puk, pukAttempts: pukAttempts, pairingPassword: pairingPassword).checkOK()
+        } catch let error as TLVError {
+            throw CardError.invalidResponseData(error)
+        } catch let error as StatusWord {
+            throw CardError.unexpectedSW(error)
+        } catch {
+            if #available(iOS 13.0, *), case CoreNFCCardChannel.Error.invalidAPDU = error {
+                throw CardError.invalidRequestData
+            } else {
+                throw error
+            }
+        }
+    }
 
     public func initialize(pin: String, puk: String, pairingPassword: String) throws -> APDUResponse {
         try initialize(pin: pin, puk: puk, sharedSecret: pairingPasswordToSecret(password: pairingPassword))
