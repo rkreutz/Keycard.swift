@@ -15,7 +15,7 @@ enum AppCapability: UInt8 {
     case all = 0x1f
 }
 
-public struct ApplicationInfo {
+public struct ApplicationInfo: Sendable {
 
     public var instanceUID: [UInt8]
     public var freePairingSlots: Int
