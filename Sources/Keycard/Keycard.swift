@@ -134,6 +134,8 @@ public enum Identifier: String {
     case ndefInstanceAID = "D2760000850101"
     case keycardCashAID = "A000000804000103"
     case keycardCashInstanceAID = "A00000080400010301"
+    case keycardIdentAID = "A000000804000104"
+    case keycardIdentInstanceAID = "A00000080400010401"
     case isdInstanceAID = "A000000151000000"
 
     public var val: [UInt8] {

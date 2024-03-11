@@ -164,6 +164,10 @@ public class GlobalPlatformCommandSet {
     public func deleteNDEFInstance() throws -> APDUResponse {
         return try delete(aid: Identifier.ndefInstanceAID.val)
     }
+    
+    public func deleteIdentInstance() throws -> APDUResponse {
+        return try delete(aid: Identifier.keycardIdentInstanceAID.val)
+    }
 
     public func deleteKeycardPackage() throws -> APDUResponse {
         return try delete(aid: Identifier.packageAID.val)
@@ -173,6 +177,7 @@ public class GlobalPlatformCommandSet {
         try deleteNDEFInstance().checkSW(.ok, .referencedDataNotFound)
         try deleteKeycardInstance().checkSW(.ok, .referencedDataNotFound)
         try deleteCashInstance().checkSW(.ok, .referencedDataNotFound)
+        try deleteIdentInstance().checkSW(.ok, .referencedDataNotFound)
         try deleteKeycardPackage().checkSW(.ok, .referencedDataNotFound)
     }
     
@@ -236,6 +241,10 @@ public class GlobalPlatformCommandSet {
     
     public func installNDEFInstance(ndefRecord: [UInt8]) throws -> APDUResponse {
         return try installForInstall(packageAID: Identifier.packageAID.val, appletAID: Identifier.ndefAID.val, instanceAID: Identifier.ndefInstanceAID.val, params: ndefRecord)
+    }
+    
+    public func installIdentInstance() throws -> APDUResponse {
+        return try installForInstall(packageAID: Identifier.packageAID.val, appletAID: Identifier.keycardIdentAID.val, instanceAID: Identifier.keycardIdentInstanceAID.val, params: [])
     }
     
     public func installForInstall(packageAID: [UInt8], appletAID: [UInt8], instanceAID: [UInt8], params: [UInt8]) throws -> APDUResponse {
